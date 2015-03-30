@@ -1,0 +1,22 @@
+{
+  "name": "ng-mock-e2e",
+  "version": "0.1.0",
+  "description": "Mocking out HTTP backend implementation in Protractor end-to-end tests the same way it's done in AngularJS unit tests.",
+  "main": "ng-mock-e2e.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:yevhenpavliuk/ng-mock-e2e.git"
+  },
+  "author": "Yevhen Pavliuk <yevhen@pavliuk.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yevhenpavliuk/ng-mock-e2e/issues"
+  },
+  "homepage": "https://github.com/yevhenpavliuk/ng-mock-e2e",
+  "devDependencies": {
+    "toSrc": "^0.1.4"
+  }
+}
