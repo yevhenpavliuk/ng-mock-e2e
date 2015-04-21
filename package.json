@@ -16,7 +16,7 @@
     "url": "https://github.com/yevhenpavliuk/ng-mock-e2e/issues"
   },
   "homepage": "https://github.com/yevhenpavliuk/ng-mock-e2e",
-  "devDependencies": {
+  "dependencies": {
     "toSrc": "^0.1.4"
   }
 }
