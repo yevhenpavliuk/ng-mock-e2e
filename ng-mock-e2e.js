@@ -188,7 +188,7 @@ var ngMockE2E = {
      */
     convertArrayElementsToJavaScriptCode_: function (array) {
       return array.map(function (element) {
-        return toSrc(element);
+        return toSrc(element, Number.MAX_VALUE);
       });
     },
 
