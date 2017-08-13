@@ -1,68 +1,103 @@
-# ngMockE2E
+# ngMockE2E for Protractor
 
-Mocking out HTTP backend implementation in Protractor end-to-end tests the same way it's done in AngularJS unit tests.
+[The node module](https://www.npmjs.com/package/ng-mock-e2e) significantly simplifies faking HTTP back end in [Protractor](http://protractortest.org/) end-to-end tests.
 
+Check out [this tiny example project](https://github.com/yevhenpavliuk/ng-mock-e2e-example):
 
-## Installation
+```javascript
+const ngMockE2E = require('ng-mock-e2e');
+const {$httpBackend} = ngMockE2E;
 
-
-```sh
-npm install ng-mock-e2e --save-dev
-```
-
-
-## Usage Example
-
-See [$httpBackend.when](https://docs.angularjs.org/api/ngMockE2E/service/$httpBackend#when).
-
-```node
-describe('when navigating to /', function () {
-
-  var ngMockE2E = require('ng-mock-e2e');
-
-  
-  var $httpBackend = ngMockE2E.$httpBackend;
-
-
-  beforeEach(function () {
+describe('example with ngMockE2E', () => {
+  beforeEach(() => {
     ngMockE2E.addMockModule();
-    ngMockE2E.addAsDependencyForModule('myApp');
-    ngMockE2E.embedScript('/bower_components/angular-mocks/angular-mocks.js');
+    ngMockE2E.addAsDependencyForModule('example');
+    ngMockE2E.embedScript('bower_components/angular-mocks/angular-mocks.js');
   });
 
-
-  afterEach(function () {
+  afterEach(() => {
     ngMockE2E.clearMockModules();
   });
 
-
-  it('should redirect to "#/a" if POST /get-redirection-url responds with "a"', function () {
-    $httpBackend.when('POST', '/get-redirection-url').respond('a');
+  it('should have heading "It works!" if the server responds "It works!"', () => {
+    $httpBackend.when('GET', 'heading').respond('It works!');
     browser.get('/');
-    expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '#/a');
+    expect($('h1').getText()).toEqual('It works!');
   });
 
-
-  it('should redirect to "#/b" if POST /get-redirection-url responds with "b"', function () {
-    $httpBackend.when('POST', '/get-redirection-url').respond('b');
+  it('should have heading "It does work!" if the server responds "It does work!"', () => {
+    $httpBackend.when('GET', 'heading').respond('It does work!');
     browser.get('/');
-    expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '#/b');
+    expect($('h1').getText()).toEqual('It does work!');
   });
 
+  it('should have heading "Unavailable" if the server responds 404', () => {
+    $httpBackend.when('GET', 'heading').respond(404);
+    browser.get('/');
+    expect($('h1').getText()).toEqual('Unavailable');
+  });
 });
 ```
 
-`ngMockE2E.addAsDependencyForModule('myApp')` (`myApp` should be replaced with the name of your application module) is a convenient way to add ngMockE2E dependency to your application module dynamically only for end-to-end testing. You don't need to call it if you add this dependency in a different way.
+Here's how the same test suite looks without using [ngMockE2E node module](https://www.npmjs.com/package/ng-mock-e2e):
 
-`ngMockE2E.embedScript('/bower_components/angular-mocks/angular-mocks.js')` is a convenient way to embed `angular-mocks.js` only for end-to-end testing. You don't need to call it if you embed this script in a different way.
+```javascript
+describe('example without ngMockE2E', () => {
+  beforeEach(() => {
+    browser.addMockModule('example', () => {
+      angular.module('example').requires.push('ngMockE2E');
 
-## Development Notes
+      const script = document.createElement('script');
+      script.src = 'bower_components/angular-mocks/angular-mocks.js';
+      document.body.appendChild(script);
+    });
+  });
 
-This is a development prototype shared for presentational purposes. I'm planning to rewrite it using TDD.
+  afterEach(() => {
+    browser.removeMockModule('example'); // For the mock module that's added in `beforeEach`.
+    browser.removeMockModule('example'); // For the mock module that's added in `it`.
+    // The number of removals should be equal to the number of additions.
+    // Removing the mock module in `it` prevents all registered functions from execution.
+  });
 
-The following shortcut methods haven't been implemented yet: `whenGET`, `whenHEAD`, `whenDELETE`, `whenPOST`, `whenPOST`, `whenPATCH`, `whenJSONP`.
+  it('should have heading "It works!" if the server responds "It works!"', () => {
+    browser.addMockModule('example', () => {
+      angular.module('example').
+        run($httpBackend => {
+          $httpBackend.when('GET', 'heading').respond('It works!');
+        });
+    });
 
+    browser.get('/');
+    expect($('h1').getText()).toEqual('It works!');
+  });
 
-## Tips
+  it('should have heading "It does work!" if the server responds "It does work!"', () => {
+    browser.addMockModule('example', () => {
+      angular.module('example').
+        run($httpBackend => {
+          $httpBackend.when('GET', 'heading').respond('It does work!');
+        });
+    });
 
-Instead of writing `ngMockE2E.$httpBackend.when('GET', /*./).passThrough()` for each HTTP method, you can use the following shortcut that does it for you: `ngMockE2E.$httpBackend.passThrough()`.
+    browser.get('/');
+    expect($('h1').getText()).toEqual('It does work!');
+  });
+
+  it('should have heading "Unavailable" if the server responds 404', () => {
+    browser.addMockModule('example', () => {
+      angular.module('example').
+        run($httpBackend => {
+          $httpBackend.when('GET', 'heading').respond(404);
+        });
+    });
+
+    browser.get('/');
+    expect($('h1').getText()).toEqual('Unavailable');
+  });
+});
+```
+
+See [$httpBackend.when](https://docs.angularjs.org/api/ngMockE2E/service/$httpBackend#when).
+
+If you find the project useful, please, star it. This shows me that it is needed and gives me enthusiasm for supporting it.
