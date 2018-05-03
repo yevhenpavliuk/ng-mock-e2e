@@ -1,6 +1,6 @@
 {
   "name": "ng-mock-e2e",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Fake HTTP back end in Protractor end-to-end tests similarly to how it's done in AngularJS unit tests.",
   "main": "ng-mock-e2e.js",
   "scripts": {
