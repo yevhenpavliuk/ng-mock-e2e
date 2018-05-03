@@ -96,7 +96,7 @@ var ngMockE2E = {
        * @param {string} requestHandlerKey
        */
       when: function (whenArgumentsEvaluativeJavaScript, requestHandlerKey) {
-        angular.module('ngMockE2E').run(function ($httpBackend) {
+        angular.module('ngMockE2E').run(['$httpBackend', function ($httpBackend) {
           if (!window.requestHandlers_) {
             window.requestHandlers_ = {};
           }
@@ -107,7 +107,7 @@ var ngMockE2E = {
           });
           var requestHandler = $httpBackend.when.apply($httpBackend, whenArguments);
           window.requestHandlers_[requestHandlerKey] = requestHandler;
-        });
+        }]);
       },
 
 
@@ -140,7 +140,7 @@ var ngMockE2E = {
 
 
       passThrough: function () {
-        angular.module('ngMockE2E').run(function ($httpBackend) {
+        angular.module('ngMockE2E').run(['$httpBackend', function ($httpBackend) {
           var ANY_URL = /.*/;
           $httpBackend.whenGET(ANY_URL).passThrough();
           $httpBackend.whenHEAD(ANY_URL).passThrough();
@@ -148,7 +148,7 @@ var ngMockE2E = {
           $httpBackend.whenPOST(ANY_URL).passThrough();
           $httpBackend.whenPUT(ANY_URL).passThrough();
           $httpBackend.whenPATCH(ANY_URL).passThrough();
-        });
+        }]);
       }
 
     },
